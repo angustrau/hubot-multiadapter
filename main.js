@@ -8,14 +8,22 @@ ADAPTERS = ADAPTERS[0] == "" ? [] : ADAPTERS;
 class MultiAdapter extends Adapter {
 	constructor(robot) {
 		super();
-
 		this.robot = robot;
-		this.adapters = {};
 
+		this.adapters = {};
 		for (let i=0;i<ADAPTERS.length;i++) {
 			let adapter = ADAPTERS[i];
 			try {
-				this.adapters[adapter] = require(adapter).use(this.robot);
+				// Create a fake Robot object to intercept incoming messages
+				let fakeRobot = {};
+				for (let key in this.robot) {
+					fakeRobot[key] = this.robot[key];
+				}
+				fakeRobot.receive = function(message, cb) {
+					// Adapter has received a message
+				}
+
+				this.adapters[adapter] = require(adapter).use(fakeRobot);
 				this.robot.loggger.info("[MultiAdapter] Loaded adapter: " + adapter);
 			} catch(err) {
 				this.robot.logger.info("[MultiAdapter] Adapter not found: " + adapter);
@@ -24,7 +32,7 @@ class MultiAdapter extends Adapter {
 	}
 
 	send(envelope, ...strings) {
-		this.robot.logger.info(...strings);
+		
 	}
 
 	emote(envelope, ...strings) {
@@ -50,7 +58,9 @@ class MultiAdapter extends Adapter {
 	}
 
 	close() {
-
+		for (let adapter in this.adapters) {
+			adapter.close();
+		}
 	}
 }
 
