@@ -12,7 +12,8 @@ class MultiAdapter extends Adapter {
 
 		this.adapters = {};
 		for (let i=0;i<ADAPTERS.length;i++) {
-			let adapter = ADAPTERS[i];
+			const adapter = ADAPTERS[i].replace(/-/g, ""); //Make sure the adapter name does not include "-"
+
 			try {
 				// Create a fake Robot object to intercept incoming messages
 				let fakeRobot = {};
@@ -21,6 +22,9 @@ class MultiAdapter extends Adapter {
 				}
 				fakeRobot.receive = function(message, cb) {
 					// Adapter has received a message
+					// Prepend adapter name to the room so that we know which adapter the message came from
+					message.room = adapter + "-" + message.room;
+					this.robot.receive(message, cb);
 				}
 
 				this.adapters[adapter] = require(adapter).use(fakeRobot);
