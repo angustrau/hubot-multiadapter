@@ -4,7 +4,7 @@
   "description": "A hubot adapter that allows the use of multiple adapters",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,12 @@
   },
   "homepage": "https://github.com/angustrau/hubot-multiadapter#readme",
   "dependencies": {
-    "hubot": "^2.19.0"
+
+  },
+  "peerDependencies": {
+    "hubot": ">=2.0"
+  },
+  "engines": {
+    "node": ">=6.0"
   }
 }
